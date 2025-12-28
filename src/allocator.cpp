@@ -3,18 +3,19 @@
 allocator::allocator() {
     memory = malloc(POOL_SIZE);
 
-    char* start = (char*)memory;
+    char* start = static_cast<char*>(memory);
 
     if (NUM_BLOCKS == 1) {
+        freeList=reinterpret_cast<Block*>(start);
         freeListEnd = freeList;
         freeListEnd->next = nullptr;
-        return;
+        return; 
     }
     
     for (int i = 0; i < NUM_BLOCKS-1; i++)
     {
-        Block* current = (Block*)(start+BLOCK_SIZE*i);
-        Block* next = (Block*)(start+BLOCK_SIZE*(i+1));
+        Block* current = reinterpret_cast<Block*>(start+BLOCK_SIZE*i);
+        Block* next = reinterpret_cast<Block*>(start+BLOCK_SIZE*(i+1));
         current->next=next;
         if(i==NUM_BLOCKS-2){
             freeListEnd=next;
@@ -22,20 +23,29 @@ allocator::allocator() {
         }
     }
 
-    freeList=(Block*)start;
+    freeList=reinterpret_cast<Block*>(start);
 }
 
 void* allocator::allocate() {
         if(!freeList) return nullptr;
         Block* block = freeList;
         freeList=freeList->next;
-        return (void*)block;
+        if(!freeList){
+            freeListEnd=freeList;
+        }
+        return static_cast<void*>(block);
     }
 
 void allocator::deallocate(void* ptr) {
     if(!ptr){
         return;
     }
-    freeListEnd->next=(Block*)ptr;
-    freeListEnd=(Block*)ptr;
+    if(freeListEnd){
+        freeListEnd->next=static_cast<Block*>(ptr);
+    }
+    freeListEnd=static_cast<Block*>(ptr);
+    freeListEnd->next = nullptr;
+    if(!freeList){
+        freeList=freeListEnd;
+    }
 }
