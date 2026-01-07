@@ -1,9 +1,29 @@
 #include "allocator.h"
+#include<iostream>
+#include <exception>
+#include<new>
 
-allocator::allocator() {
-    memory = malloc(POOL_SIZE);
+using namespace std;
 
-    char* start = static_cast<char*>(memory);
+Allocator::Allocator() {
+    Memory = malloc(POOL_SIZE);
+
+    try
+    {
+        if (!Memory)
+        {
+            throw bad_alloc();
+        }
+        
+    }
+    catch(bad_alloc& b)
+    {
+        cout<<"Memory allocation failed due to internal errors exiting";
+        exit(EXIT_FAILURE);
+    }
+    
+
+    char* start = static_cast<char*>(Memory);
 
     if (NUM_BLOCKS == 1) {
         freeList=reinterpret_cast<Block*>(start);
@@ -26,7 +46,7 @@ allocator::allocator() {
     freeList=reinterpret_cast<Block*>(start);
 }
 
-void* allocator::allocate() {
+void* Allocator::allocate() {
         if(!freeList) return nullptr;
         Block* block = freeList;
         freeList=freeList->next;
@@ -36,7 +56,7 @@ void* allocator::allocate() {
         return static_cast<void*>(block);
     }
 
-void allocator::deallocate(void* ptr) {
+void Allocator::deallocate(void* ptr) {
     if(!ptr){
         return;
     }

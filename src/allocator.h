@@ -3,12 +3,12 @@
 
 #include "block.h"
 
-class allocator{
+class Allocator{
 public:
 
-    void* memory;
+    void* Memory;
 
-    allocator();
+    Allocator();
 
     void* allocate();
     void deallocate(void* ptr);
