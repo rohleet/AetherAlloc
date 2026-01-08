@@ -11,5 +11,7 @@ int main() {
 
     a.deallocate(ptr);
 
+    cout<<"Done"<<endl;
+
     return 0;
 }
