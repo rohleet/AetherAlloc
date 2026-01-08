@@ -69,3 +69,8 @@ void Allocator::deallocate(void* ptr) {
         freeList=freeListEnd;
     }
 }
+
+
+Allocator::~Allocator() {
+    free(Memory);
+}

@@ -12,6 +12,8 @@ public:
 
     void* allocate();
     void deallocate(void* ptr);
+
+    ~Allocator();
 };
 
 #endif
